@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,5 +35,13 @@ public class PostsService {
                 new ResourceNotFoundException("Post not found with id: "+postId));
 
         return modelMapper.map(post, PostDto.class);
+    }
+
+    public List<PostDto> getAllPostsOfUser(Long userId) {
+        List<Post> posts = postsRepository.findByUserId(userId);
+
+        return posts.stream()
+                    .map((element) -> modelMapper.map(element, PostDto.class))
+                    .collect(Collectors.toList());
     }
 }
