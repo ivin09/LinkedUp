@@ -1,5 +1,8 @@
 package com.linkedup.posts_service.services;
 
+import com.linkedup.posts_service.auth.UserContextHolder;
+import com.linkedup.posts_service.clients.ConnectionsClient;
+import com.linkedup.posts_service.dto.PersonDto;
 import com.linkedup.posts_service.dto.PostCreateRequestDto;
 import com.linkedup.posts_service.dto.PostDto;
 import com.linkedup.posts_service.entity.Post;
@@ -20,6 +23,7 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final ModelMapper modelMapper;
+    private final ConnectionsClient connectionsClient;
 
     public PostDto createPost(PostCreateRequestDto postDto, Long userId) {
         Post post = modelMapper.map(postDto, Post.class);
@@ -31,6 +35,11 @@ public class PostsService {
 
     public PostDto getPostById(Long postId) {
         log.debug("Retrieving post with id: {}", postId);
+
+        Long userId = UserContextHolder.getCurrentUserId();
+
+        List<PersonDto> firstConnections = connectionsClient.getFirstDegreeConnections();
+
         Post post = postsRepository.findById(postId).orElseThrow(() ->
                 new ResourceNotFoundException("Post not found with id: "+postId));
 

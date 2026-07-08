@@ -2,12 +2,10 @@ package com.linkedup.connection_service.controller;
 
 import com.linkedup.connection_service.entity.Person;
 import com.linkedup.connection_service.service.ConnectionsService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,9 +16,8 @@ public class ConnectionController {
 
     private final ConnectionsService connectionsService;
 
-    @GetMapping("/{userId}/first-degree")
-    public ResponseEntity<List<Person>> getFirstDegreeConnections(@PathVariable Long userId) {
-        List<Person> personList = connectionsService.getFirstDegreeConnectionsOfUser(userId);
-        return ResponseEntity.ok(personList);
+    @GetMapping("/first-degree")
+    public ResponseEntity<List<Person>> getFirstDegreeConnections() {
+        return ResponseEntity.ok(connectionsService.getFirstDegreeConnectionsOfUser());
     }
 }

@@ -1,5 +1,6 @@
 package com.linkedup.posts_service.controller;
 
+import com.linkedup.posts_service.auth.UserContextHolder;
 import com.linkedup.posts_service.dto.PostCreateRequestDto;
 import com.linkedup.posts_service.dto.PostDto;
 import com.linkedup.posts_service.services.PostsService;
@@ -25,8 +26,7 @@ public class PostsController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getPost(@PathVariable Long postId,
-                                           @RequestHeader("X-User-Id") String userId) {
+    public ResponseEntity<PostDto> getPost(@PathVariable Long postId) {
         PostDto postDto = postsService.getPostById(postId);
         return ResponseEntity.ok(postDto);
     }
