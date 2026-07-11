@@ -3,6 +3,7 @@ package com.linkedup.notification_service.clients;
 import com.linkedup.notification_service.dto.PersonDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -10,5 +11,5 @@ import java.util.List;
 public interface ConnectionsClient {
 
     @GetMapping("/core/first-degree")
-    List<PersonDto> getFirstDegreeConnections(Long userId);
+    List<PersonDto> getFirstDegreeConnections(@RequestHeader("X-User-Id") Long userId);
 }

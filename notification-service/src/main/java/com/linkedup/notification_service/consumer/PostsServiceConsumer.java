@@ -2,10 +2,10 @@ package com.linkedup.notification_service.consumer;
 
 import com.linkedup.notification_service.clients.ConnectionsClient;
 import com.linkedup.notification_service.dto.PersonDto;
-import com.linkedup.notification_service.entity.Notification;
 import com.linkedup.notification_service.repository.NotificationRepository;
 import com.linkedup.posts_service.event.PostCreatedEvent;
 import com.linkedup.posts_service.event.PostLikedEvent;
+import com.linkedup.notification_service.service.SendNotification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,31 +20,24 @@ public class PostsServiceConsumer {
 
     private final ConnectionsClient connectionsClient;
     private final NotificationRepository notificationRepository;
+    private final SendNotification sendNotification;
 
     @KafkaListener(topics = "post-created-topic")
-    public void handlePostCreated(PostCreatedEvent postCreatedEvent){
+    public void handlePostCreated(PostCreatedEvent postCreatedEvent) {
         log.info("Sending notification: handlePostCreated: {}", postCreatedEvent);
         List<PersonDto> connections = connectionsClient.getFirstDegreeConnections(postCreatedEvent.getCreatorId());
 
-        for(PersonDto connection : connections){
-            sendNotification(connection.getUserId(), "Your connection "+ postCreatedEvent.getCreatorId()+" has created a post, check it out!!!");
+        for (PersonDto connection : connections) {
+            sendNotification.send(connection.getUserId(), "Your connection " + postCreatedEvent.getCreatorId() + " has created a post, check it out!!!");
         }
     }
 
     @KafkaListener(topics = "post-liked-topic")
-    public void handlePostLiked(PostLikedEvent postLikedEvent){
+    public void handlePostLiked(PostLikedEvent postLikedEvent) {
         log.info("Sending notification: handlePostLiked: {}", postLikedEvent);
         String message = String.format("Your post %d has been liked by %d !!", postLikedEvent.getPostId(),
                 postLikedEvent.getLikedByUserId());
 
-        sendNotification(postLikedEvent.getCreatorId(), message);
-    }
-
-    public void sendNotification(Long userId, String message){
-        Notification notification = new Notification();
-        notification.setMessage(message);
-        notification.setUserId(userId);
-
-        notificationRepository.save(notification);
+        sendNotification.send(postLikedEvent.getCreatorId(), message);
     }
 }
